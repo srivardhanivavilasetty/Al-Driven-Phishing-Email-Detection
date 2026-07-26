@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - Phishing Detector{% endblock %}
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <h3>Administrator Dashboard</h3>
+    <p>Manage system usage and review aggregate analytics.</p>
+  </div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card shadow-sm p-3 bg-white"><h6>Total Users</h6><p class="display-6">{{ total_users }}</p></div></div>
+  <div class="col-md-3"><div class="card shadow-sm p-3 bg-white"><h6>Total Scans</h6><p class="display-6">{{ total_scans }}</p></div></div>
+  <div class="col-md-3"><div class="card shadow-sm p-3 bg-danger text-white"><h6>Phishing Detections</h6><p class="display-6">{{ total_phishing }}</p></div></div>
+  <div class="col-md-3"><div class="card shadow-sm p-3 bg-success text-white"><h6>Legitimate</h6><p class="display-6">{{ total_legitimate }}</p></div></div>
+</div>
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm p-4">
+      <h5>Recent Analyses</h5>
+      <table class="table table-sm">
+        <thead><tr><th>Date</th><th>Sender</th><th>Prediction</th><th>Risk</th></tr></thead>
+        <tbody>
+          {% if recent %}
+            {% for row in recent %}
+            <tr>
+              <td>{{ row.created_at.strftime('%Y-%m-%d') }}</td>
+              <td>{{ row.sender|truncate(20) }}</td>
+              <td>{{ row.prediction }}</td>
+              <td>{{ row.risk_level }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="4">No recent analysis available.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm p-4">
+      <h5>Model Metrics</h5>
+      {% if model_results %}
+      <p>Best model: <strong>{{ model_results.best_model.model_name }}</strong></p>
+      <ul>
+        <li>Accuracy: {{ model_results.best_model.accuracy | round(3) }}</li>
+        <li>Precision: {{ model_results.best_model.precision | round(3) }}</li>
+        <li>Recall: {{ model_results.best_model.recall | round(3) }}</li>
+        <li>F1-score: {{ model_results.best_model.f1_score | round(3) }}</li>
+      </ul>
+      {% else %}
+      <p>Model results are not available. Run model training to update this summary.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

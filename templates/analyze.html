@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Analyze Email - Phishing Detector{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Email Analysis</h3>
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label">Sender Email</label>
+            <input type="email" name="sender" class="form-control" value="{{ sender or '' }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" value="{{ subject or '' }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email Body</label>
+            <textarea name="email_body" class="form-control" rows="8" required>{{ email_body or '' }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Analyze Email</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

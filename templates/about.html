@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}About - Phishing Detector{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card shadow-sm p-4 mb-4">
+      <h3>About the Project</h3>
+      <p>This application uses Natural Language Processing and machine learning to analyze email messages, derive structured metadata features, and classify each email as phishing or legitimate.</p>
+      <h5>Key components</h5>
+      <ul>
+        <li>Text cleaning, tokenization, and lemmatization with NLTK.</li>
+        <li>TF-IDF vectorization for email subjects and bodies.</li>
+        <li>Custom metadata extraction for URLs, suspicious keywords, and urgency patterns.</li>
+        <li>Model comparison with Logistic Regression, Naive Bayes, Random Forest, and MLP.</li>
+        <li>Historical analysis storage in MySQL.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

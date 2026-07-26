@@ -1,0 +1,22 @@
+sender,subject,body,label
+support@banksecure.com,Verify your account now,Dear user, we noticed unusual activity on your account. Please verify your identity by clicking the link below.,phishing
+newsletter@company.com,Weekly updates,Hello! Here is your weekly newsletter with updates on company news.,legitimate
+admin@securemail.net,Password reset required,Urgent: Your password must be reset immediately to avoid account suspension. Click here now.,phishing
+service@shoppingmall.com,Order confirmation,Thank you for shopping with us. Your order has been confirmed and will ship soon.,legitimate
+alerts@paymentgateway.com,Security Alert,We detected a login from a new device. Confirm your identity or your account will be locked.,phishing
+noreply@socialapp.com,New friend request,You have a new friend request waiting on your social profile. Log in to connect.,legitimate
+support@webmail.com,Confirm payment details,Dear customer, confirm your payment details to avoid service disruption.,phishing
+info@conference.org,Conference registration,Thank you for registering for our event. See attached agenda and venue details.,legitimate
+offers@trustedshop.com,Limited time offer,Only 24 hours left to claim your discount on selected products.,legitimate
+alert@itdepartment.com,Account suspended,Your account has been suspended due to suspicious activity. Verify now to restore access.,phishing
+updates@newsdaily.com,Daily news digest,Catch up on today’s headlines, weather, and top stories in one place.,legitimate
+security@bank.com,Important: Login alert,A login attempt was blocked. If this wasn’t you, confirm your identity immediately.,phishing
+support@education.edu,Course enrollment complete,Your registration is complete and your course materials are now available.,legitimate
+team@cloudservice.com,Storage upgrade reminder,Your cloud storage is at 95% capacity. Upgrade now to avoid disruption.,legitimate
+winner@prizesite.com,You have won a prize,Congratulations! You are selected to claim your prize. Click here to collect your reward.,phishing
+info@telecom.com,Bill payment reminder,Your monthly bill is now due. Pay by the due date to avoid service interruption.,legitimate
+service@securityalerts.com,Update payment information,Please update your payment information to continue using your account.,phishing
+support@companymail.com,Meeting summary,Attached is the summary of our meeting and the next actions required.,legitimate
+admin@webhosting.net,Your website account,Your hosting account requires a review. Log in to see urgent updates.,phishing
+info@travelguide.com,Holiday travel recommendations,Get personalized travel tips for your next holiday destination.,legitimate
+alerts@bankservices.com,Suspicious login blocked,A login attempt was blocked. Verify your account if this wasn’t you.,phishing

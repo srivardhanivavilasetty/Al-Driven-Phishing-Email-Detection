@@ -1,0 +1,6 @@
+sender,subject,body,label
+support@banksecure.com,verify your account now,dear user we noticed unusual activity on your account please verify your identity by clicking the link below,phishing
+newsletter@company.com,weekly updates,hello here is your weekly newsletter with updates on company news,legitimate
+admin@securemail.net,password reset required,urgent your password must be reset immediately to avoid account suspension click here now,phishing
+service@shoppingmall.com,order confirmation,thank you for shopping with us your order has been confirmed and will ship soon,legitimate
+alerts@paymentgateway.com,security alert,we detected a login from a new device confirm your identity or your account will be locked,phishing

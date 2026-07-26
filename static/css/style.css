@@ -1,0 +1,27 @@
+body {
+  background-color: #f4f7fb;
+  color: #2d3748;
+}
+.hero {
+  min-height: 60vh;
+}
+.feature-card, .stat-card, .result-card {
+  border: 1px solid #e4e7ec;
+}
+.result-card p {
+  font-size: 1.5rem;
+  margin: 0;
+}
+.card .card-body h5 {
+  font-weight: 600;
+}
+.table-responsive {
+  overflow-x: auto;
+}
+.btn-primary {
+  background-color: #0d6efd;
+}
+footer {
+  margin-top: 4rem;
+  padding: 2rem 0;
+}

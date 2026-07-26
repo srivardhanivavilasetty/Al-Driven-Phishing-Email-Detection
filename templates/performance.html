@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Performance - Phishing Detector{% endblock %}
+{% block content %}
+<div class="row mb-4">
+  <div class="col-12">
+    <h3>Model Performance</h3>
+    <p>Review actual model metrics and the selected best model from the latest training run.</p>
+  </div>
+</div>
+{% if model_results %}
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm p-4">
+      <h5>Best Model</h5>
+      <p class="fs-4">{{ model_results.best_model.model_name }}</p>
+      <p>F1 Score: {{ model_results.best_model.f1_score | round(3) }}</p>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card shadow-sm p-4">
+      <img src="{{ url_for('static', filename='images/' ~ model_results.comparison_chart) }}" alt="Model Comparison" class="img-fluid">
+    </div>
+  </div>
+</div>
+<div class="row">
+  {% for result in model_results.model_results %}
+  <div class="col-md-6 mb-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5>{{ result.model_name }}</h5>
+        <ul class="list-unstyled">
+          <li><strong>Accuracy:</strong> {{ result.accuracy | round(3) }}</li>
+          <li><strong>Precision:</strong> {{ result.precision | round(3) }}</li>
+          <li><strong>Recall:</strong> {{ result.recall | round(3) }}</li>
+          <li><strong>F1-score:</strong> {{ result.f1_score | round(3) }}</li>
+        </ul>
+        <img src="{{ url_for('static', filename='images/' ~ result.model_name.lower().replace(' ', '_') ~ '_confusion.png') }}" class="img-fluid" alt="{{ result.model_name }} confusion matrix">
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-warning">Model performance data is not available. Please run <code>python ml/train_models.py</code> to generate training artifacts.</div>
+{% endif %}
+{% endblock %}

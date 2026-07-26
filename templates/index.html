@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}AI Phishing Email Detection{% endblock %}
+{% block content %}
+<div class="hero bg-white p-5 rounded shadow-sm">
+  <div class="row align-items-center">
+    <div class="col-lg-6">
+      <h1 class="display-5">AI-Driven Phishing Email Detection Using NLP</h1>
+      <p class="lead">Analyze email content and metadata to identify phishing threats, score risk, and explain suspicious indicators.</p>
+      <a class="btn btn-primary btn-lg me-2" href="{{ url_for('analyze') }}">Analyze Email</a>
+      <a class="btn btn-outline-secondary btn-lg" href="{{ url_for('about') }}">Learn More</a>
+    </div>
+    <div class="col-lg-6 text-center">
+      <img src="https://img.freepik.com/free-vector/cyber-security-concept-illustration_114360-9502.jpg?w=740&t=st=1700672617~exp=1700673217~hmac=ca15453bb47212ed0825eaa7b2a3459551e0ef84dac6f8b1dbc11d154f97d746" alt="Cybersecurity illustration" class="img-fluid rounded shadow" />
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-4">
+    <div class="feature-card p-4 bg-white rounded shadow-sm">
+      <h5>Natural Language Processing</h5>
+      <p>Clean and tokenize email text, remove noise, and extract meaningful TF-IDF features for machine learning.</p>
+    </div>
+  </div>
+  <div class="col-md-4 mt-4 mt-md-0">
+    <div class="feature-card p-4 bg-white rounded shadow-sm">
+      <h5>Metadata Analysis</h5>
+      <p>Inspect URLs, sender patterns, punctuation, urgency words, and structural signals to support model predictions.</p>
+    </div>
+  </div>
+  <div class="col-md-4 mt-4 mt-md-0">
+    <div class="feature-card p-4 bg-white rounded shadow-sm">
+      <h5>Machine Learning</h5>
+      <p>Compare models and select the best performer using accuracy, precision, recall, and F1-score metrics.</p>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-lg-12 bg-white rounded shadow-sm p-4">
+    <h3>How it works</h3>
+    <ul>
+      <li>Users register and log in to perform email analysis.</li>
+      <li>The system extracts raw metadata before cleaning content.</li>
+      <li>Text is transformed using TF-IDF and combined with custom features.</li>
+      <li>The best trained model returns a phishing or legitimate prediction.</li>
+      <li>Results are stored so users can review their analysis history.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <div class="col-md-4">
+    <div class="stat-card p-4 bg-dark text-white rounded shadow-sm">
+      <h4>Safe design</h4>
+      <p>Built with authentication, hashed passwords, and SQL parameterization.</p>
+    </div>
+  </div>
+  <div class="col-md-4 mt-4 mt-md-0">
+    <div class="stat-card p-4 bg-primary text-white rounded shadow-sm">
+      <h4>Admin portal</h4>
+      <p>Manage users, review system usage, and view model performance.</p>
+    </div>
+  </div>
+  <div class="col-md-4 mt-4 mt-md-0">
+    <div class="stat-card p-4 bg-success text-white rounded shadow-sm">
+      <h4>Predictive results</h4>
+      <p>Risk level, confidence score, and warning indicators help make informed decisions.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

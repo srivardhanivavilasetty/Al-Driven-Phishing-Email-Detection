@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users - Phishing Detector{% endblock %}
+{% block content %}
+<div class="row mb-3">
+  <div class="col-12">
+    <h3>User Management</h3>
+    <p>View and remove accounts. Administrators cannot delete their own active account.</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="table-responsive bg-white rounded shadow-sm p-3">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Member Since</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if users %}
+            {% for user in users %}
+            <tr>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.role }}</td>
+              <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" onsubmit="return confirm('Delete this user?');">
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="5" class="text-center py-4">No users found.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
