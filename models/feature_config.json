@@ -1,0 +1,19 @@
+{
+    "metadata_features": [
+        "url_count",
+        "suspicious_url_count",
+        "email_address_count",
+        "exclamation_count",
+        "question_count",
+        "digit_count",
+        "uppercase_ratio",
+        "body_length",
+        "subject_length",
+        "suspicious_keyword_count",
+        "html_tag_presence",
+        "ip_url_presence",
+        "urgency_keyword_count"
+    ],
+    "text_feature_method": "tfidf",
+    "vectorizer": "tfidf_vectorizer.pkl"
+}

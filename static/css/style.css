@@ -25,3 +25,58 @@ footer {
   margin-top: 4rem;
   padding: 2rem 0;
 }
+.email-client-card {
+  border: none;
+  border-radius: 1.75rem;
+  box-shadow: 0 0.85rem 2rem rgba(15, 23, 42, 0.08);
+}
+.email-client-card .card-header {
+  border-bottom: none;
+  background-color: transparent;
+}
+.email-client-card .message-meta {
+  gap: 1rem;
+}
+.email-client-card .message-meta .badge {
+  background-color: #eef2ff;
+  color: #3730a3;
+  border-radius: 0.75rem;
+  font-size: 0.92rem;
+  padding: 0.55rem 0.9rem;
+}
+.email-client-card .message-subject {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.email-client-card .message-body {
+  white-space: pre-wrap;
+  line-height: 1.75;
+  font-size: 1rem;
+  color: #333945;
+}
+.email-client-card .message-body textarea {
+  border: none;
+  background: transparent;
+  resize: none;
+  box-shadow: none;
+}
+.email-client-card .message-body textarea:focus {
+  outline: none;
+  box-shadow: none;
+}
+.email-details-label {
+  font-size: 0.88rem;
+  color: #6b7280;
+}
+.email-details-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
+}
+.email-overlay {
+  background-color: #ffffff;
+}
+.alert-result-card {
+  border-radius: 1.25rem;
+  box-shadow: 0 0.75rem 1.5rem rgba(15, 23, 42, 0.08);
+}

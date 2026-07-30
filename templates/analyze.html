@@ -2,24 +2,75 @@
 {% block title %}Analyze Email - Phishing Detector{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-lg-8">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h3 class="card-title mb-3">Email Analysis</h3>
+  <div class="col-xl-10 col-lg-11">
+    <div class="card email-client-card overflow-hidden">
+      <div class="card-header bg-white border-0 py-4 px-5">
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
+          <div>
+            <h4 class="mb-1"><i class="bi bi-envelope-fill text-primary me-2"></i>Email Details</h4>
+            <p class="text-muted mb-0">A polished email preview before analysis.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card-body p-5">
+        {% if result %}
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <h5 class="mb-2">Analysis Result</h5>
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <div class="fs-5">Prediction:</div>
+              <div><span class="badge bg-{{ 'danger' if result.prediction == 'PHISHING' else 'success' }}">{{ result.prediction }}</span></div>
+            </div>
+            <div class="row g-3 mb-2">
+              <div class="col-md-4"><div class="result-card p-3 bg-light rounded"><strong>Confidence</strong><p>{{ result.confidence }}%</p></div></div>
+              <div class="col-md-4"><div class="result-card p-3 bg-light rounded"><strong>Risk Score</strong><p>{{ result.risk_score }}</p></div></div>
+              <div class="col-md-4"><div class="result-card p-3 bg-light rounded"><strong>Risk Level</strong><p>{{ result.risk_level }}</p></div></div>
+            </div>
+            <div class="mb-2">
+              <strong>Warning Indicators:</strong>
+              {% if result.warning_indicators %}
+                <ul class="mb-0">
+                  {% for i in result.warning_indicators %}
+                    <li>{{ i }}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <div>No suspicious warning indicators were detected.</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
         <form method="POST">
-          <div class="mb-3">
-            <label class="form-label">Sender Email</label>
-            <input type="email" name="sender" class="form-control" value="{{ sender or '' }}" required>
+          <div class="row g-4 mb-4">
+            <div class="col-md-4">
+              <label class="email-details-label mb-2">From</label>
+              <input type="email" name="sender" class="form-control border-0 px-0 py-2 fw-semibold text-dark" value="{{ sender or '' }}" placeholder="Enter sender email" required>
+            </div>
+            <div class="col-md-4">
+              <label class="email-details-label mb-2">To</label>
+              <input type="email" name="recipient" class="form-control border-0 px-0 py-2 fw-semibold text-dark" value="{{ recipient or '' }}" placeholder="Enter receiver email" required>
+            </div>
+            <div class="col-md-4">
+              <label class="email-details-label mb-2">Date &amp; Time</label>
+              <input type="datetime-local" name="date_time" class="form-control border-0 px-0 py-2 text-dark" value="{{ date_time or '' }}" placeholder="Select date and time">
+            </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Subject</label>
-            <input type="text" name="subject" class="form-control" value="{{ subject or '' }}" required>
+
+          <div class="mb-4">
+            <label class="email-details-label mb-2">Subject</label>
+            <input type="text" name="subject" class="form-control form-control-lg border-0 px-0 py-2 fw-bold message-subject" value="{{ subject or '' }}" placeholder="Enter email subject" required>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Email Body</label>
-            <textarea name="email_body" class="form-control" rows="8" required>{{ email_body or '' }}</textarea>
+
+          <div class="card rounded-4 border shadow-sm mb-4">
+            <div class="card-body p-4 message-body">
+              <label class="email-details-label mb-2 d-block">Email Body</label>
+              <textarea name="email_body" class="form-control border-0 p-0 h-auto message-body" rows="10" placeholder="Type or paste email content...">{{ email_body or '' }}</textarea>
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary">Analyze Email</button>
+
+          <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm"><i class="bi bi-shield-lock-fill me-2"></i>Analyze Email</button>
         </form>
       </div>
     </div>

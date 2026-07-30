@@ -16,8 +16,30 @@ from ml.feature_extraction import extract_metadata_features, build_feature_matri
 from config import Config
 
 
+import csv
+
+
 def load_dataset(path):
-    df = pd.read_csv(path)
+    records = []
+    with open(path, 'r', encoding='utf-8', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        header = next(reader, None)
+        if header is None or header != ['sender', 'subject', 'body', 'label']:
+            raise ValueError("Dataset must contain header columns: sender, subject, body, label")
+        for row_number, row in enumerate(reader, start=2):
+            if len(row) < 4:
+                raise ValueError(f"Invalid dataset row at line {row_number}: expected at least 4 fields, got {len(row)}")
+            sender = row[0].strip()
+            subject = row[1].strip()
+            label = row[-1].strip()
+            body = ','.join(field.strip() for field in row[2:-1])
+            records.append({
+                'sender': sender,
+                'subject': subject,
+                'body': body,
+                'label': label
+            })
+    df = pd.DataFrame(records)
     required_columns = {'sender', 'subject', 'body', 'label'}
     if not required_columns.issubset(df.columns):
         raise ValueError(f"Dataset must contain columns: {required_columns}")

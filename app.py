@@ -15,11 +15,25 @@ app.secret_key = app.config['SECRET_KEY']
 def get_db_connection():
     return mysql.connector.connect(
         host=app.config['DB_HOST'],
+        port=app.config['DB_PORT'],
         user=app.config['DB_USER'],
         password=app.config['DB_PASSWORD'],
         database=app.config['DB_NAME'],
         autocommit=True
     )
+
+
+def close_db_resources(cursor=None, conn=None):
+    if cursor is not None:
+        try:
+            cursor.close()
+        except Exception:
+            pass
+    if conn is not None:
+        try:
+            conn.close()
+        except Exception:
+            pass
 
 
 def login_required(f):
@@ -50,6 +64,9 @@ def load_model_results():
             return json.load(f)
     except FileNotFoundError:
         return None
+    except json.JSONDecodeError as e:
+        app.logger.exception('Failed to parse model_results.json')
+        return None
 
 
 @app.route('/')
@@ -68,6 +85,8 @@ def register():
             return render_template('register.html')
 
         password_hash = generate_password_hash(password)
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -80,11 +99,11 @@ def register():
             return redirect(url_for('login'))
         except mysql.connector.IntegrityError:
             flash('An account with that email already exists.', 'danger')
-        except Exception:
+        except Exception as e:
+            app.logger.exception('Registration failed')
             flash('Unable to create account, please try again later.', 'danger')
         finally:
-            cursor.close()
-            conn.close()
+            close_db_resources(cursor, conn)
 
     return render_template('register.html')
 
@@ -98,6 +117,8 @@ def login():
             flash('Email and password are required.', 'warning')
             return render_template('login.html')
 
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor(dictionary=True)
@@ -110,11 +131,11 @@ def login():
                 flash('Login successful.', 'success')
                 return redirect(url_for('dashboard'))
             flash('Invalid email or password.', 'danger')
-        except Exception:
+        except Exception as e:
+            app.logger.exception('Login failed')
             flash('Unable to log in, please try again later.', 'danger')
         finally:
-            cursor.close()
-            conn.close()
+            close_db_resources(cursor, conn)
 
     return render_template('login.html')
 
@@ -129,10 +150,11 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute('SELECT COUNT(*) AS total FROM email_analysis WHERE user_id = %s', (session['user_id'],))
         total_emails = cursor.fetchone()['total']
         cursor.execute('SELECT COUNT(*) AS total FROM email_analysis WHERE user_id = %s AND prediction = %s', (session['user_id'], 'PHISHING'))
@@ -144,9 +166,13 @@ def dashboard():
             (session['user_id'],)
         )
         recent = cursor.fetchall()
+    except Exception as e:
+        app.logger.exception('Failed to load dashboard data')
+        flash('Unable to load dashboard at this time.', 'danger')
+        total_emails = phishing_count = legitimate_count = 0
+        recent = []
     finally:
-        cursor.close()
-        conn.close()
+        close_db_resources(cursor, conn)
 
     return render_template('dashboard.html', total_emails=total_emails,
                            phishing_count=phishing_count,
@@ -159,28 +185,31 @@ def dashboard():
 def analyze():
     if request.method == 'POST':
         sender = request.form.get('sender', '').strip()
+        recipient = request.form.get('recipient', '').strip()
         subject = request.form.get('subject', '').strip()
         email_body = request.form.get('email_body', '').strip()
-        if not sender or not subject or not email_body:
+        if not sender or not recipient or not subject or not email_body:
             flash('All fields are required to analyze an email.', 'warning')
-            return render_template('analyze.html', sender=sender, subject=subject, email_body=email_body)
+            return render_template('analyze.html', sender=sender, recipient=recipient, subject=subject, email_body=email_body)
 
         try:
             result = predict_email(sender, subject, email_body)
         except FileNotFoundError as ex:
             flash(str(ex), 'danger')
-            return render_template('analyze.html', sender=sender, subject=subject, email_body=email_body)
+            return render_template('analyze.html', sender=sender, recipient=recipient, subject=subject, email_body=email_body)
         except Exception:
             flash('Unable to analyze email at this time.', 'danger')
-            return render_template('analyze.html', sender=sender, subject=subject, email_body=email_body)
+            return render_template('analyze.html', sender=sender, recipient=recipient, subject=subject, email_body=email_body)
 
+        conn = None
+        cursor = None
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute(
-                'INSERT INTO email_analysis (user_id, sender, subject, email_body, prediction, confidence, risk_score, risk_level, url_count, suspicious_keyword_count, warning_indicators) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                'INSERT INTO email_analysis (user_id, sender, recipient, subject, email_body, prediction, confidence, risk_score, risk_level, url_count, suspicious_keyword_count, warning_indicators) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
                 (
-                    session['user_id'], sender, subject, email_body,
+                    session['user_id'], sender, recipient, subject, email_body,
                     result['prediction'], result['confidence'], result['risk_score'],
                     result['risk_level'], result['extracted_features']['url_count'],
                     result['extracted_features']['suspicious_keyword_count'],
@@ -188,13 +217,14 @@ def analyze():
                 )
             )
             conn.commit()
-        except Exception:
-            flash('Analysis result could not be saved to history.', 'warning')
+        except Exception as e:
+            app.logger.exception('Failed to save analysis result to history')
+            # Show exception message for debugging (safe in local/dev)
+            flash(f'Analysis result could not be saved to history: {e}', 'warning')
         finally:
-            cursor.close()
-            conn.close()
+            close_db_resources(cursor, conn)
 
-        return render_template('result.html', result=result, sender=sender, subject=subject, email_body=email_body)
+        return render_template('analyze.html', result=result, sender=sender, recipient=recipient, subject=subject, email_body=email_body, date_time=request.form.get('date_time', ''))
 
     return render_template('analyze.html')
 
@@ -222,14 +252,19 @@ def history():
         params.append(filter_prediction)
     sql += ' ORDER BY created_at DESC'
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    conn = None
+    cursor = None
+    records = []
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute(sql, tuple(params))
         records = cursor.fetchall()
+    except Exception as e:
+        app.logger.exception('Failed to load history')
+        flash('Unable to load history at this time.', 'danger')
     finally:
-        cursor.close()
-        conn.close()
+        close_db_resources(cursor, conn)
 
     return render_template('history.html', records=records, search_query=search_query, filter_prediction=filter_prediction)
 
@@ -237,9 +272,11 @@ def history():
 @app.route('/delete-history/<int:record_id>', methods=['POST'])
 @login_required
 def delete_history(record_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute('DELETE FROM email_analysis WHERE id = %s AND user_id = %s', (record_id, session['user_id']))
         if cursor.rowcount == 0:
             flash('No record deleted. It may not belong to you.', 'warning')
@@ -249,8 +286,7 @@ def delete_history(record_id):
     except Exception:
         flash('Unable to delete history item.', 'danger')
     finally:
-        cursor.close()
-        conn.close()
+        close_db_resources(cursor, conn)
     return redirect(url_for('history'))
 
 
@@ -270,9 +306,11 @@ def about():
 @login_required
 @admin_required
 def admin_dashboard():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute('SELECT COUNT(*) AS total FROM users')
         total_users = cursor.fetchone()['total']
         cursor.execute('SELECT COUNT(*) AS total FROM email_analysis')
@@ -285,8 +323,7 @@ def admin_dashboard():
         recent = cursor.fetchall()
         model_results = load_model_results()
     finally:
-        cursor.close()
-        conn.close()
+        close_db_resources(cursor, conn)
 
     return render_template('admin_dashboard.html', total_users=total_users,
                            total_scans=total_scans,
@@ -300,14 +337,19 @@ def admin_dashboard():
 @login_required
 @admin_required
 def manage_users():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    conn = None
+    cursor = None
+    users = []
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC')
         users = cursor.fetchall()
+    except Exception as e:
+        app.logger.exception('Failed to load users')
+        flash('Unable to load users at this time.', 'danger')
     finally:
-        cursor.close()
-        conn.close()
+        close_db_resources(cursor, conn)
     return render_template('manage_users.html', users=users)
 
 
@@ -318,17 +360,18 @@ def delete_user(user_id):
     if session.get('user_id') == user_id:
         flash('You cannot delete your own active administrator account.', 'warning')
         return redirect(url_for('manage_users'))
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
         cursor.execute('DELETE FROM users WHERE id = %s', (user_id,))
         conn.commit()
         flash('User deleted successfully.', 'success')
     except Exception:
         flash('Unable to delete user.', 'danger')
     finally:
-        cursor.close()
-        conn.close()
+        close_db_resources(cursor, conn)
     return redirect(url_for('manage_users'))
 
 
